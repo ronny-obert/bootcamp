@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EquipmentRepository {
-    Optional<Equipment> getById(int id);
+    Optional<Equipment> findAllById(int id);
 
     Optional<List> findAll();
 
@@ -12,7 +12,7 @@ public interface EquipmentRepository {
 
     Equipment save(Equipment equipment) throws Exception;
 
-    int deleteById(Long id);
+    int deleteById(int id);
 
     Equipment update(Equipment equipment) throws EquipmentNotFoundException;
 }

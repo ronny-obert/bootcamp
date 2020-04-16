@@ -11,6 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SpringBootApplicationLuncher {
     public static void main(String[] args) {
-        SpringApplication.run(OutdoorStoreController.class, args);
+        SpringApplication.run(SpringBootApplicationLuncher.class, args);
     }
 }

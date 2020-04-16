@@ -15,51 +15,49 @@ import java.util.Optional;
 public class OutdoorStoreController {
 
     @Autowired
-    private EquipmentRepostoryJPA equipmentRepositoryJpa;
+    private EquipmentRepository equipmentRepository;
 
     @GetMapping
     public List findAll() {
-        List<Equipment> all = equipmentRepositoryJpa.findAll();
-        return all;
+        Optional<List> equipments = equipmentRepository.findAll();
+        return equipments.orElse(Collections.emptyList());
     }
 
     @GetMapping("/category/{equipmentCategory}")
     public List findByTitle(@PathVariable String equipmentCategory) {
-        return equipmentRepositoryJpa.findByCategory(equipmentCategory);
-    }
-
-    @GetMapping("/items")
-    public List findItems(@RequestParam String category, @RequestParam String model) {
-        return equipmentRepositoryJpa.findByCategoryAndModel(category, model);
+        return equipmentRepository.findByCategory(equipmentCategory);
     }
 
     @GetMapping("/{id}")
     public Equipment findOne(@PathVariable Integer id) {
-        return equipmentRepositoryJpa.findAllById(id)
-                .orElseThrow();
+        Optional<Equipment> eq = equipmentRepository.findAllById(id);
+        if(!eq.isEmpty()){
+            throw new EquipmentNotFoundException("Equipment not found");
+        }
+        return eq.orElseThrow();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Equipment create(@RequestBody Equipment equipment) throws Exception {
-        return equipmentRepositoryJpa.save(equipment);
+        return equipmentRepository.save(equipment);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
-        if(!equipmentRepositoryJpa.findById(id).isPresent()){
+        if(!equipmentRepository.findAllById(id).isPresent()){
             throw new EquipmentNotFoundException("Equipment not found");
         }
-        equipmentRepositoryJpa.deleteById(id);
+        equipmentRepository.deleteById(id);
     }
 
     @PutMapping("/{id}")
     public Equipment updateBook(@RequestBody Equipment equipment, @PathVariable int id) throws EquipmentNotFoundException {
-        if(!equipmentRepositoryJpa.findById(id).isPresent()){
+        if(!equipmentRepository.findAllById(id).isPresent()){
             throw new EquipmentNotFoundException("Equipment not found");
         }
         equipment.setId(id);
 
-        return equipmentRepositoryJpa.save(equipment);
+        return equipmentRepository.update(equipment);
     }
 }

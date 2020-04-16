@@ -17,19 +17,25 @@ public class EquipmentRepositoryDB implements EquipmentRepository {
     private JdbcTemplate jtm;
 
     @Override
-    public Optional<Equipment> getById(int id) {
+    public Optional<Equipment> findAllById(int id) {
+        Equipment equipment = new Equipment();
+        try {
 
-        String sql = "SELECT * FROM equipment WHERE id = ?";
+            String sql = "SELECT * FROM tbl_equipment WHERE id = ?";
 
-        Equipment equipment = jtm.queryForObject(sql, new Object[]{id},
-                new BeanPropertyRowMapper<>(Equipment.class));
-        return Optional.of(equipment);
+            equipment = jtm.queryForObject(sql, new Object[]{id},
+                    new BeanPropertyRowMapper<>(Equipment.class));
+            return Optional.of(equipment);
+        }
+        catch (Exception e) {
+            return Optional.of(equipment);
+        }
     }
 
     @Override
     public Optional<List> findAll() {
 
-        String sql = "SELECT id, category, brand, name, stock, model, price FROM equipment";
+        String sql = "SELECT id, category, brand, name, stock, model, price FROM tbl_equipment";
 
         List<Equipment> equipments = jtm.query(sql, new Object[]{},
                 new BeanPropertyRowMapper<>(Equipment.class));
@@ -43,7 +49,7 @@ public class EquipmentRepositoryDB implements EquipmentRepository {
 
     @Override
     public Equipment save(Equipment equipment) throws Exception {
-        String sql = "INSERT INTO equipment (category, brand, name, stock, model, price) VALUES\n" +
+        String sql = "INSERT INTO tbl_equipment (category, brand, name, stock, model, price) VALUES\n" +
                 "  (?, ?, ?, ?, ?, ? )";
 
         int a= jtm.update(sql, equipment.getCategory(), equipment.getBrand(), equipment.getName(), equipment.getStock(), equipment.getModel(), equipment.getPrice());
@@ -57,15 +63,21 @@ public class EquipmentRepositoryDB implements EquipmentRepository {
     }
 
     @Override
-    public int deleteById(Long id) {
+    public int deleteById(int id) {
+        Equipment equipment = new Equipment();
+        try {
+            String sql = "DELETE FROM tbl_equipment WHERE id = ?";
+            return jtm.update(sql, id);
+        }
+        catch (Exception e) {
+            return 0;
+        }
 
-        String sql = "DELETE FROM equipment WHERE id = ?";
-        return jtm.update(sql, id);
     }
 
     @Override
     public Equipment update(Equipment equipment) throws EquipmentNotFoundException {
-        String sql = "UPDATE equipment set category = ?, brand = ?, name = ?, stock = ?, model = ?, price = ? WHERE id = ?";
+        String sql = "UPDATE tbl_equipment set category = ?, brand = ?, name = ?, stock = ?, model = ?, price = ? WHERE id = ?";
         int result = jtm.update(sql, equipment.getCategory(), equipment.getBrand(), equipment.getName(), equipment.getStock(), equipment.getModel(), equipment.getPrice(), equipment.getId());
 
         if (result > 0) {
